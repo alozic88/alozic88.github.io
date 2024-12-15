@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distilled Emotions with Reforging History & Initial State</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin:0;
+            padding:0;
+        }
+        .top-container {
+            display: flex;
+            align-items: start;
+            padding: 10px;
+        }
+        .left-panel {
+            width: 500px;
+            padding-right:10px;
+        }
+        .right-panel {
+            flex:1;
+            border-left: 1px solid #ccc;
+            padding-left:10px;
+            margin-left:20px;
+            max-height:600px; 
+            overflow:auto;
+        }
+        table.gems-table {
+            width:100%;
+            border-collapse: collapse;
+            margin-bottom:10px;
+        }
+        table.gems-table th, table.gems-table td {
+            border:1px solid #ccc;
+            padding:5px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        table.gems-table th {
+            background:#474747;
+            text-align:left;
+        }
+        label img {
+            vertical-align: middle;
+        }
+        input[type="number"] {
+            width:50px;
+            text-align:center;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            border: 1px solid #aaa;
+            padding: 5px;
+            background: #f9f9f9;
+        }
+        .log-entry button {
+            margin-left: 10px;
+        }
+
+        /* Results section */
+        .results-section {
+            padding:10px;
+        }
+        table {
+            border-collapse: collapse;
+            width:100%;
+            margin-top:10px;
+        }
+        th, td {
+            border:1px solid #ccc;
+            padding:5px;
+        }
+        th {
+            background:#4CAF50;
+            color:#fff;
+        }
+
+        .buttons-container {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-container">
+    <div class="left-panel">
+        <h1>Gems</h1>
+        <table class="gems-table">
+            <thead>
+                <tr>
+                    <th>Gem Name</th>
+                    <th>Count</th>
+                    <th>Reforge All</th>
+                    <th>Reforge And Keep ≥ 1</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <label>
+                            <img src="https://cdn.poe2db.tw/image/art/2ditems/currency/distilledemotions/distilledire.webp" height="16">
+                            Distilled Ire:
+                        </label>
+                    </td>
+                    <td><input type="number" id="ire" min="0" value="0"></td>
+                    <td><button type="button" onclick="handleReforge('ire', false)">Reforge All</button></td>
+                    <td><button type="button" onclick="handleReforge('ire', true)">Reforge And Keep ≥ 1</button></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>
+                            <img src="https://cdn.poe2db.tw/image/art/2ditems/currency/distilledemotions/distilledguilt.webp" height="16">
+                            Distilled Guilt:
+                        </label>
+                    </td>
+                    <td><input type="number" id="guilt" min="0" value="0"></td>
+                    <td><button type="button" onclick="handleReforge('guilt', false)">Reforge All</button></td>
+                    <td><button type="button" onclick="handleReforge('guilt', true)">Reforge And Keep ≥ 1</button></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>
+                            <img src="https://cdn.poe2db.tw/image/art/2ditems/currency/distilledemotions/distilledgreed.webp" height="16">
+                            Distilled Greed:
+                        </label>
+                    </td>
+                    <td><input type="number" id="greed" min="0" value="0"></td>
+                    <td><button type="button" onclick="handleReforge('greed', false)">Reforge All</button></td>
+                    <td><button type="button" onclick="handleReforge('greed', true)">Reforge And Keep ≥ 1</button></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>
+                            <img src="https://cdn.poe2db.tw/image/art/2ditems/currency/distilledemotions/distilledparanoia.webp" height="16">
+                            Distilled Paranoia:
+                        </label>
+                    </td>
+                    <td><input type="number" id="paranoia" min="0" value="0"></td>
+                    <td><button type="button" onclick="handleReforge('paranoia', false)">Reforge All</button></td>
+                    <td><button type="button" onclick="handleReforge('paranoia', true)">Reforge And Keep ≥ 1</button></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>
+                            <img src="https://cdn.poe2db.tw/image/art/2ditems/currency/distilledemotions/distilledenvy.webp" height="16">
+                            Distilled Envy:
+                        </label>
+                    </td>
+                    <td><input type="number" id="envy" min="0" value="0"></td>
+                    <td><button type="button" onclick="handleReforge('envy', false)">Reforge All</button></td>
+                    <td><button type="button" onclick="handleReforge('envy', true)">Reforge And Keep ≥ 1</button></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>
+                            <img src="https://cdn.poe2db.tw/image/art/2ditems/currency/distilledemotions/distilleddisgust.webp" height="16">
+                            Distilled Disgust:
+                        </label>
+                    </td>
+                    <td><input type="number" id="disgust" min="0" value="0"></td>
+                    <td><button type="button" onclick="handleReforge('disgust', false)">Reforge All</button></td>
+                    <td><button type="button" onclick="handleReforge('disgust', true)">Reforge And Keep ≥ 1</button></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>
+                            <img src="https://cdn.poe2db.tw/image/art/2ditems/currency/distilledemotions/distilleddespair.webp" height="16">
+                            Distilled Despair:
+                        </label>
+                    </td>
+                    <td><input type="number" id="despair" min="0" value="0"></td>
+                    <td><button type="button" onclick="handleReforge('despair', false)">Reforge All</button></td>
+                    <td><button type="button" onclick="handleReforge('despair', true)">Reforge And Keep ≥ 1</button></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>
+                            <img src="https://cdn.poe2db.tw/image/art/2ditems/currency/distilledemotions/distilledfear.webp" height="16">
+                            Distilled Fear:
+                        </label>
+                    </td>
+                    <td><input type="number" id="fear" min="0" value="0"></td>
+                    <td><button type="button" onclick="handleReforge('fear', false)">Reforge All</button></td>
+                    <td><button type="button" onclick="handleReforge('fear', true)">Reforge And Keep ≥ 1</button></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>
+                            <img src="https://cdn.poe2db.tw/image/art/2ditems/currency/distilledemotions/distilledsuffering.webp" height="16">
+                            Distilled Suffering:
+                        </label>
+                    </td>
+                    <td><input type="number" id="suffering" min="0" value="0"></td>
+                    <td><button type="button" onclick="handleReforge('suffering', false)">Reforge All</button></td>
+                    <td><button type="button" onclick="handleReforge('suffering', true)">Reforge And Keep ≥ 1</button></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>
+                            <img src="https://cdn.poe2db.tw/image/art/2ditems/currency/distilledemotions/distilledisolation.webp" height="16">
+                            Distilled Isolation:
+                        </label>
+                    </td>
+                    <td><input type="number" id="isolation" min="0" value="0"></td>
+                    <td><button type="button" onclick="handleReforge('isolation', false)">Reforge All</button></td>
+                    <td><button type="button" onclick="handleReforge('isolation', true)">Reforge And Keep ≥ 1</button></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="buttons-container">
+            <button onclick="fetchAndProcessHTML()">Extract Passives</button>
+            <button type="button" onclick="resetGems()">Reset All Gems to 0</button>
+            <button type="button" id="initial-state-btn" style="display:none;" onclick="revertToInitialState()">Initial State</button>
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <h2>Reforge History</h2>
+        <div id="log"></div>
+    </div>
+</div>
+
+<div class="results-section">
+    <h2>Results</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Passive</th>
+                <th>Combination</th>
+                <th>Effect</th>
+            </tr>
+        </thead>
+        <tbody id="results">
+        </tbody>
+    </table>
+</div>
+
+<script>
+const reforgeChain = {
+    ire: 'guilt',
+    guilt: 'greed',
+    greed: 'paranoia',
+    paranoia: 'envy',
+    envy: 'disgust',
+    disgust: 'despair',
+    despair: 'fear',
+    fear: 'suffering',
+    suffering: 'isolation'
+};
+
+let history = [];
+let currentIndex = -1; 
+let logCount = 0; 
+let initialState = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+    saveHistoryState("Initial State");
+});
+
+function getCurrentGemCounts() {
+    return {
+        ire: parseInt(document.getElementById('ire').value) || 0,
+        guilt: parseInt(document.getElementById('guilt').value) || 0,
+        greed: parseInt(document.getElementById('greed').value) || 0,
+        despair: parseInt(document.getElementById('despair').value) || 0,
+        fear: parseInt(document.getElementById('fear').value) || 0,
+        envy: parseInt(document.getElementById('envy').value) || 0,
+        disgust: parseInt(document.getElementById('disgust').value) || 0,
+        isolation: parseInt(document.getElementById('isolation').value) || 0,
+        paranoia: parseInt(document.getElementById('paranoia').value) || 0,
+        suffering: parseInt(document.getElementById('suffering').value) || 0
+    };
+}
+
+function setGemCounts(state) {
+    document.getElementById('ire').value = state.ire;
+    document.getElementById('guilt').value = state.guilt;
+    document.getElementById('greed').value = state.greed;
+    document.getElementById('despair').value = state.despair;
+    document.getElementById('fear').value = state.fear;
+    document.getElementById('envy').value = state.envy;
+    document.getElementById('disgust').value = state.disgust;
+    document.getElementById('isolation').value = state.isolation;
+    document.getElementById('paranoia').value = state.paranoia;
+    document.getElementById('suffering').value = state.suffering;
+}
+
+function saveHistoryState(description) {
+    const state = getCurrentGemCounts();
+    history.push({ state, description });
+    currentIndex = history.length - 1;
+    return currentIndex;
+}
+
+function logAction(message, revertIndex) {
+    const logDiv = document.getElementById('log');
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    logCount++;
+    entry.textContent = `#${logCount} - ${message}`;
+    const revertButton = document.createElement('button');
+    revertButton.textContent = "Revert to this step";
+    revertButton.onclick = () => {
+        revertToState(revertIndex);
+    };
+    entry.appendChild(revertButton);
+    logDiv.insertBefore(entry, logDiv.firstChild);
+}
+
+function revertToState(index) {
+    if (index < 0 || index >= history.length) return;
+    const { state } = history[index];
+    setGemCounts(state);
+    currentIndex = index;
+}
+
+function revertToInitialState() {
+    if (initialState) {
+        setGemCounts(initialState);
+    }
+}
+
+function handleReforge(gemId, keepOne) {
+    if (!initialState) {
+        initialState = getCurrentGemCounts();
+        document.getElementById('initial-state-btn').style.display = 'inline-block';
+    }
+
+    const beforeIndex = saveHistoryState("Before Reforge");
+    const beforeState = history[beforeIndex].state;
+
+    const currentVal = beforeState[gemId] || 0;
+    const nextGem = reforgeChain[gemId];
+    if (!nextGem) {
+        alert(gemId + " does not reforge further.");
+        return;
+    }
+
+    const nextVal = beforeState[nextGem] || 0;
+
+    let finalCurrentVal = currentVal;
+    let finalNextVal = nextVal;
+
+    if (keepOne && currentVal > 0) {
+        const available = currentVal - 1;
+        const sets = Math.floor(available / 3);
+        if (sets > 0) {
+            const used = sets * 3;
+            const leftover = available - used; 
+            finalCurrentVal = leftover + 1; 
+            finalNextVal = nextVal + sets;
+
+            setGemCounts({
+                ...beforeState,
+                [gemId]: finalCurrentVal,
+                [nextGem]: finalNextVal
+            });
+            const afterIndex = saveHistoryState(`After Reforge ${gemId} (Keep ≥ 1)`);
+            logAction(
+                `You have reforged ${used} ${gemId} into ${sets} ${nextGem}, you have ${finalCurrentVal} left of ${gemId}.`,
+                afterIndex
+            );
+        } else {
+            alert("Not enough gems to reforge with Keep ≥ 1.");
+        }
+    } else {
+        const sets = Math.floor(currentVal / 3);
+        if (sets > 0) {
+            const used = sets * 3;
+            const leftover = currentVal - used;
+            finalCurrentVal = leftover;
+            finalNextVal = nextVal + sets;
+
+            setGemCounts({
+                ...beforeState,
+                [gemId]: finalCurrentVal,
+                [nextGem]: finalNextVal
+            });
+            const afterIndex = saveHistoryState(`After Reforge ${gemId} (All)`);
+            logAction(
+                `You have reforged ${used} ${gemId} into ${sets} ${nextGem}, you have ${finalCurrentVal} left of ${gemId}.`,
+                afterIndex
+            );
+        } else {
+            alert("Not enough gems to reforge.");
+        }
+    }
+}
+
+async function fetchAndProcessHTML() {
+    try {
+        const response = await fetch('./distilled_emotions_passives.html');
+        if (!response.ok) {
+            alert('Failed to fetch the HTML file.');
+            return;
+        }
+
+        const html = await response.text();
+        parseHTMLAndDisplayTable(html);
+    } catch (error) {
+        console.error('Error during fetch:', error);
+        alert('An error occurred while fetching the HTML file.');
+    }
+}
+
+function parseHTMLAndDisplayTable(html) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    const rows = doc.querySelectorAll('table.table-hover.table-striped tbody tr');
+
+    const gemCounts = getCurrentGemCounts();
+    displayCraftablePassives(rows, gemCounts, 'results');
+}
+
+function displayCraftablePassives(rows, gemCounts, tableBodyId) {
+    const tableBody = document.getElementById(tableBodyId);
+    tableBody.innerHTML = '';
+
+    rows.forEach((row) => {
+        try {
+            const emotions = Array.from(row.querySelectorAll('td:first-child a.item_currency'))
+                .map(e => e.textContent.trim());
+            const passive = row.querySelector('td:nth-child(2) a')?.textContent.trim() || '';
+            const effects = Array.from(row.querySelectorAll('td:nth-child(2) .implicitMod'))
+                .map(e => e.textContent.trim())
+                .join(' ');
+
+            if (emotions.length === 0 && passive === '') return;
+
+            const requiredGems = {};
+            emotions.forEach(emotion => {
+                const cleanedEmotion = emotion.replace(/^Distilled\s+/, '').toLowerCase().replace(' ', '_');
+                requiredGems[cleanedEmotion] = (requiredGems[cleanedEmotion] || 0) + 1;
+            });
+
+            let canCraft = true;
+            for (const [gem, requiredCount] of Object.entries(requiredGems)) {
+                const availableCount = gemCounts[gem] || 0;
+                if (availableCount < requiredCount) {
+                    canCraft = false;
+                    break;
+                }
+            }
+
+            if (canCraft) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${passive}</td>
+                    <td>${emotions.join(', ')}</td>
+                    <td>${effects}</td>
+                `;
+                tableBody.appendChild(tr);
+            }
+
+        } catch (error) {
+            console.error('Error processing row:', error);
+        }
+    });
+    console.log('Table update complete for', tableBodyId);
+}
+
+function resetGems() {
+    document.getElementById('ire').value = 0;
+    document.getElementById('guilt').value = 0;
+    document.getElementById('greed').value = 0;
+    document.getElementById('despair').value = 0;
+    document.getElementById('fear').value = 0;
+    document.getElementById('envy').value = 0;
+    document.getElementById('disgust').value = 0;
+    document.getElementById('isolation').value = 0;
+    document.getElementById('paranoia').value = 0;
+    document.getElementById('suffering').value = 0;
+
+    document.getElementById('log').innerHTML = '';
+    logCount = 0;
+
+    initialState = null;
+    document.getElementById('initial-state-btn').style.display = 'none';
+
+    saveHistoryState("After Reset");
+}
+</script>
+
+</body>
+</html>
