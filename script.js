@@ -1,14 +1,14 @@
 async function fetchAndProcessHTML() {
     try {
         console.log('Fetching the HTML file...');
-        const response = await fetch('./distilled_emotions_passives.html'); // Ensure the path is correct
+        const response = await fetch('./distilled_emotions_passives.html');
         if (!response.ok) {
             alert('Failed to fetch the HTML file.');
             return;
         }
 
         const html = await response.text();
-        console.log('HTML fetched successfully:', html.slice(0, 500)); // Log the first 500 characters for verification
+        console.log('HTML fetched successfully:', html.slice(0, 500));
         parseHTMLAndDisplayTable(html);
     } catch (error) {
         console.error('Error during fetch:', error);
@@ -22,7 +22,7 @@ function parseHTMLAndDisplayTable(html) {
     const doc = parser.parseFromString(html, 'text/html');
 
     const rows = doc.querySelectorAll('table.table-hover.table-striped tbody tr');
-    console.log(`Found ${rows.length} table rows.`); // Log number of rows found
+    console.log(`Found ${rows.length} table rows.`);
 
     const gemCounts = {
         ire: parseInt(document.getElementById('ire').value) || 0,
@@ -57,14 +57,12 @@ function parseHTMLAndDisplayTable(html) {
 
             const requiredGems = {};
             emotions.forEach(emotion => {
-                // Remove "Distilled " prefix and convert spaces to underscores, and lowercase
                 const cleanedEmotion = emotion.replace(/^Distilled\s+/, '').toLowerCase().replace(' ', '_');
                 requiredGems[cleanedEmotion] = (requiredGems[cleanedEmotion] || 0) + 1;
             });
             
             console.log(`Row ${index + 1}: Required Gems -`, requiredGems);
 
-            // Debugging canCraft logic
             let canCraft = true;
             for (const [gem, requiredCount] of Object.entries(requiredGems)) {
                 const availableCount = gemCounts[gem.toLowerCase().replace(' ', '_')] || 0;
@@ -77,7 +75,7 @@ function parseHTMLAndDisplayTable(html) {
             console.log(`Row ${index + 1}: Can craft? ${canCraft}`);
             
             if (emotions.length === 0 && passive === '') {
-                return; // Do not display or continue with this row
+                return;
             }
 
             if (canCraft) {
@@ -94,6 +92,6 @@ function parseHTMLAndDisplayTable(html) {
             console.error(`Error processing row ${index + 1}:`, error);
         }
     });
-
+    
     console.log('Table update complete.');
 }
