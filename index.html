@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distilled Emotions Table</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        input[type="range"] { width: 80%; }
+    </style>
+    <script>
+        async function submitForm() {
+            const gemCounts = {
+                ire: parseInt(document.getElementById('ire').value),
+                guilt: parseInt(document.getElementById('guilt').value),
+                greed: parseInt(document.getElementById('greed').value),
+                despair: parseInt(document.getElementById('despair').value),
+                fear: parseInt(document.getElementById('fear').value),
+                envy: parseInt(document.getElementById('envy').value),
+                disgust: parseInt(document.getElementById('disgust').value),
+                isolation: parseInt(document.getElementById('isolation').value),
+                paranoia: parseInt(document.getElementById('paranoia').value),
+                suffering: parseInt(document.getElementById('suffering').value)
+            };
+
+            const response = await fetch('/process', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(gemCounts)
+            });
+
+            const data = await response.json();
+            displayResults(data);
+        }
+
+        function displayResults(data) {
+            const table = document.getElementById('results');
+            table.innerHTML = `<tr><th>Passive</th><th>Combination</th><th>Effect</th></tr>`;
+            data.forEach(row => {
+                table.innerHTML += `
+                    <tr>
+                        <td>${row.Passive}</td>
+                        <td>${row.Combination}</td>
+                        <td>${row.Effect}</td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Distilled Emotions Table Extractor</h1>
+    <p>Use the sliders to input how many gems you have:</p>
+    <div>
+        <label>Distilled Ire: <input type="range" id="ire" min="0" max="10" value="0"> <span id="ire-val">0</span></label><br>
+        <label>Distilled Guilt: <input type="range" id="guilt" min="0" max="10" value="0"> <span id="guilt-val">0</span></label><br>
+        <label>Distilled Greed: <input type="range" id="greed" min="0" max="10" value="0"> <span id="greed-val">0</span></label><br>
+        <label>Distilled Despair: <input type="range" id="despair" min="0" max="10" value="0"> <span id="despair-val">0</span></label><br>
+        <label>Distilled Fear: <input type="range" id="fear" min="0" max="10" value="0"> <span id="fear-val">0</span></label><br>
+        <label>Distilled Envy: <input type="range" id="envy" min="0" max="10" value="0"> <span id="envy-val">0</span></label><br>
+        <label>Distilled Disgust: <input type="range" id="disgust" min="0" max="10" value="0"> <span id="disgust-val">0</span></label><br>
+        <label>Distilled Isolation: <input type="range" id="isolation" min="0" max="10" value="0"> <span id="isolation-val">0</span></label><br>
+        <label>Distilled Paranoia: <input type="range" id="paranoia" min="0" max="10" value="0"> <span id="paranoia-val">0</span></label><br>
+        <label>Distilled Suffering: <input type="range" id="suffering" min="0" max="10" value="0"> <span id="suffering-val">0</span></label><br>
+    </div>
+    <button onclick="submitForm()">Extract Passives</button>
+
+    <h2>Results</h2>
+    <table id="results">
+        <tr><th>Passive</th><th>Combination</th><th>Effect</th></tr>
+    </table>
+
+    <script>
+        // Update slider values dynamically
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', () => {
+                document.getElementById(`${slider.id}-val`).innerText = slider.value;
+            });
+        });
+    </script>
+</body>
+</html>
