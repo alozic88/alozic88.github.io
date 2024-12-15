@@ -9,6 +9,7 @@
             font-family: Arial, sans-serif;
             margin:0;
             padding:0;
+            background-size: cover;
         }
         .top-container {
             display: flex;
@@ -82,10 +83,15 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            padding: 10px;
         }
     </style>
 </head>
 <body>
+
+<div class="buttons-container">
+    <button id="toggle-bg-btn">Turn Background On</button>
+</div>
 
 <div class="top-container">
     <div class="left-panel">
@@ -242,6 +248,24 @@
 </div>
 
 <script>
+
+let backgroundOn = false;
+    const toggleBtn = document.getElementById('toggle-bg-btn');
+
+    toggleBtn.addEventListener('click', () => {
+        const body = document.body;
+        if (backgroundOn) {
+            body.style.background = 'none';
+            toggleBtn.textContent = 'Turn Background On';
+            backgroundOn = false;
+        } else {
+            body.style.background = 'url("https://hideoutshowcase.com/hideoutscreenshots/5KxKPGNGQTZuMOBpuMBs2PBhWQbuRxjFawEOT5dQ.png") no-repeat center center fixed';
+            body.style.backgroundSize = 'cover';
+            toggleBtn.textContent = 'Turn Background Off';
+            backgroundOn = true;
+        }
+    });
+
 const reforgeChain = {
     ire: 'guilt',
     guilt: 'greed',
